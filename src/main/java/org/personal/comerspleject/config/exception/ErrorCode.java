@@ -16,7 +16,11 @@ public enum ErrorCode {
     _PASSWORD_NOT_MATCHES(HttpStatus.NOT_FOUND, "비밀번호가 맞지 않습니다"),
     _DELETED_USER(HttpStatus.NOT_FOUND, "탈퇴한 유저 입니다"),
 
-    _NOT_PERMITTED_USER(HttpStatus.BAD_REQUEST, "허용되지 않는 사용자 입니다");
+    _NOT_PERMITTED_USER(HttpStatus.BAD_REQUEST, "허용되지 않는 사용자 입니다"),
+
+    _BAD_REQUEST_INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않는 이메일입니다"),
+    _DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다"),
+    _INVALID_PASSWORD_FORM(HttpStatus.BAD_REQUEST, "유효하지 않는 이메일 형식입니다");
 
 
     private final HttpStatus status;
