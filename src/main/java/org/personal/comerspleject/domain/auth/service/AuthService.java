@@ -1,0 +1,96 @@
+package org.personal.comerspleject.domain.auth.service;
+
+import lombok.RequiredArgsConstructor;
+import org.personal.comerspleject.config.exception.EcomosException;
+import org.personal.comerspleject.config.exception.ErrorCode;
+import org.personal.comerspleject.config.jwt.JwtUtil;
+import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
+import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
+import org.personal.comerspleject.domain.user.entity.User;
+import org.personal.comerspleject.domain.user.entity.UserRole;
+import org.personal.comerspleject.domain.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.regex.Pattern;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+    // 이메일 유효성 검사 정규 표현식
+    private static final String EMAIL_PATTERN =
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+    // 비밀번호 유효성 검사 정규 표현식
+    private static final String PASSWORD_PATTERN =
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+
+    // 회원가입
+    @Transactional
+    public void signup(SignupRequestDto signupRequestDto) {
+
+        // 이메일 형식 유효성 검사
+        if(!isValidEmail(signupRequestDto.getEmail())) {
+            throw new EcomosException(ErrorCode._BAD_REQUEST_INVALID_EMAIL);
+        }
+
+        // 이메일 중복확인
+        if(userRepository.existsByEmail(signupRequestDto.getEmail())) {
+            throw new EcomosException(ErrorCode._DUPLICATED_EMAIL);
+        }
+
+        // 비밀번호 형식 유효성 검사
+        if(!isValidPassword(signupRequestDto.getPassword())) {
+            throw new EcomosException(ErrorCode._INVALID_PASSWORD_FORM);
+        }
+
+        String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
+
+        UserRole role = UserRole.of(signupRequestDto.getUserRole());
+
+        User newUser = new User(
+                signupRequestDto.getEmail(),
+                encodedPassword,
+                signupRequestDto.getName(),
+                role
+        );
+        // 유저 생성 후 저장
+        userRepository.save(newUser);
+    }
+
+    // 이메일 유효성 검사 메서드
+    private boolean isValidEmail(String email) {
+        return Pattern.matches(EMAIL_PATTERN, email);
+    }
+
+    // 비밀번호 유효성 검사 메서드
+    private boolean isValidPassword(String password) {
+        return Pattern.matches(PASSWORD_PATTERN, password);
+    }
+
+    // 로그인
+    @Transactional
+    public String signin(SigninRequestDto signinRequestDto) {
+        User user = userRepository.findByEmail(signinRequestDto.getEmail()).orElseThrow(
+                () -> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        // 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401을 반환
+        if(!passwordEncoder.matches(signinRequestDto.getPassword(), user.getPassword())) {
+            throw new EcomosException(ErrorCode._PASSWORD_NOT_MATCHES);
+        }
+
+        // 탈퇴한 유저일 경우 로그인 불가
+        if(user.getIsdeleted()) {
+            throw new EcomosException(ErrorCode._DELETED_USER);
+        }
+
+        return jwtUtil.createToken(user.getUid(), user.getEmail(), user.getName(), user.getRole());
+    }
+}
