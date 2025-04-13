@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.AuthUser;
+import org.personal.comerspleject.domain.user.dto.request.ResetPasswordRequestDto;
 import org.personal.comerspleject.domain.user.dto.request.UpdateUserRequestDto;
 import org.personal.comerspleject.domain.user.dto.response.UpdateUserResponseDto;
 import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
@@ -77,6 +78,20 @@ public class UserService {
     }
 
     // 비밀번호 찾기
+    public void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto) {
 
+        User user = userRepository.findByEmail(resetPasswordRequestDto.getEmail())
+                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        if(user.getIsdeleted()) {
+            throw new EcomosException(ErrorCode._DELETED_USER);
+        }
+
+        String encodedPassword = passwordEncoder.encode(resetPasswordRequestDto.getNewPassword());
+        user.updatePassword(encodedPassword);
+
+        userRepository.save(user);
+
+    }
 
 }
