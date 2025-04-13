@@ -31,20 +31,24 @@ public class User implements Serializable {
     @Column
     private UserRole role;
 
+    private String address;
+
     // 회원탈퇴 유무
     private Boolean isdeleted = false;
 
-    public User(String email, String password, String name, UserRole role) {
+    public User(String email, String password, String name, UserRole role, String address) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.role = role;
+        this.address = address;
     }
 
     // AuthUser로 User 만들 때
-    public User(String email, String password) {
+    public User(String email, String password, String address) {
         this.email = email;
         this.password = password;
+        this.address = address;
     }
 
     private User(Long uid, String email, UserRole role) {
@@ -59,5 +63,11 @@ public class User implements Serializable {
 
     public void updateUserRole(UserRole newUserRole) {
         this.role = newUserRole;
+    }
+
+    // User 수정 메서드
+    public void updateUserinfo(String password, String address) {
+        this.password = password;
+        this.address = address;
     }
 }

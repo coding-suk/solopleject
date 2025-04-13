@@ -24,4 +24,7 @@ public class SignupRequestDto {
     @NotBlank
     private String userRole;
 
+    @NotBlank
+    private String address;
+
 }
