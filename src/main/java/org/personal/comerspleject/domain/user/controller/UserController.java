@@ -2,7 +2,7 @@ package org.personal.comerspleject.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.jwt.AuthUser;
-import org.personal.comerspleject.domain.user.dto.DeleteUserRequestDto;
+import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
 import org.personal.comerspleject.domain.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
