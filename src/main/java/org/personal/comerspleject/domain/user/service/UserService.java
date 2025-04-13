@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.AuthUser;
-import org.personal.comerspleject.domain.user.dto.DeleteUserRequestDto;
+import org.personal.comerspleject.domain.user.dto.request.UpdateUserRequestDto;
+import org.personal.comerspleject.domain.user.dto.response.UpdateUserResponseDto;
+import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
 import org.personal.comerspleject.domain.user.entity.User;
 import org.personal.comerspleject.domain.user.entity.UserRole;
 import org.personal.comerspleject.domain.user.repository.UserRepository;
@@ -39,9 +41,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 회원의 권한을 admin으로 승격 시키는 로직
     @Transactional
     public void updateUserAuthority(Long id, AuthUser authUser) {
-        if(!authUser.getAuthorities().equals(UserRole.ADMIN)) {
+
+        boolean isAdmin = authUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+
+        if(!isAdmin) {
             throw new EcomosException(ErrorCode._NOT_PERMITTED_USER);
         }
         User user = userRepository.findById(id).orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
@@ -51,5 +58,25 @@ public class UserService {
         }
         user.updateUserRole(UserRole.ADMIN);
     }
+
+    // 회원 정보 수정 로직
+    @Transactional
+    public UpdateUserResponseDto updateUser(String email, UpdateUserRequestDto updateUserRequestDto) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        if(user.getIsdeleted()) {
+            throw new EcomosException(ErrorCode._DELETED_USER);
+        }
+
+        String encodedPassword = passwordEncoder.encode(updateUserRequestDto.getPassword());
+        user.updateUserinfo(encodedPassword, updateUserRequestDto.getAddress());
+
+        return new UpdateUserResponseDto(user.getEmail(), user.getAddress());
+    }
+
+    // 비밀번호 찾기
+
 
 }
