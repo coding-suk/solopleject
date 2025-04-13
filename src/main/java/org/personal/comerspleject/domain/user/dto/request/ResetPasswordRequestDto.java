@@ -8,4 +8,9 @@ public class ResetPasswordRequestDto {
     private String email;
     private String newPassword;
 
+    public ResetPasswordRequestDto(String email, String newPassword) {
+        this.email = email;
+        this.newPassword = newPassword;
+    }
+
 }

@@ -65,7 +65,7 @@ public class User implements Serializable {
         this.role = newUserRole;
     }
 
-    // User 수정 메서드
+    // User정보 수정 메서드
     public void updateUserinfo(String password, String address) {
         this.password = password;
         this.address = address;

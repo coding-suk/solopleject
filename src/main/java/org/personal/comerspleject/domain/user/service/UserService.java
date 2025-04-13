@@ -79,7 +79,6 @@ public class UserService {
 
     // 비밀번호 찾기
     public void resetPassword(ResetPasswordRequestDto resetPasswordRequestDto) {
-
         User user = userRepository.findByEmail(resetPasswordRequestDto.getEmail())
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
@@ -91,7 +90,8 @@ public class UserService {
         user.updatePassword(encodedPassword);
 
         userRepository.save(user);
-
     }
 
+    public void sendPasswordEmail(String email) {
+    }
 }
