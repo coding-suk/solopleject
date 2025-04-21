@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
+import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.user.entity.UserRole;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -44,9 +45,10 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 String name = claims.get("name", String.class);
                 String email = claims.get("email", String.class);
                 UserRole userRole = UserRole.of(claims.get("role",String.class));
+                String address = claims.get("address", String.class);
 
                 if(SecurityContextHolder.getContext().getAuthentication() == null) {
-                    AuthUser authUser = new AuthUser(userId, name, email, userRole);
+                    AuthUser authUser = new AuthUser(userId, name, email, userRole, address);
 
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));

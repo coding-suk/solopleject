@@ -1,5 +1,6 @@
 package org.personal.comerspleject.config.jwt;
 
+import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {

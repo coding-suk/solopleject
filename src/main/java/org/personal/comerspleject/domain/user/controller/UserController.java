@@ -2,7 +2,7 @@ package org.personal.comerspleject.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.common.dto.response.CommonResponseDto;
-import org.personal.comerspleject.config.jwt.AuthUser;
+import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.user.dto.request.afterlogin.ChangePasswordRequestDto;
 import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
 import org.personal.comerspleject.domain.user.dto.request.sendemail.NeedEmailResetPassword;
@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다");
     }
 
-    // 비밀번호 수정 이메일 버전
+    // 비밀번호 수정 이메일 버전(로그인 전)
     @PostMapping("/password/email")
     public ResponseEntity<CommonResponseDto> sendPasswordEmail(@RequestBody SendPasswordEmailRequestDto sendPasswordRequestDto) {
         userService.sendPasswordEmail(sendPasswordRequestDto.getEmail());

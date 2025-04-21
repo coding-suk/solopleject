@@ -29,13 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // 세션 관련 내용 CSRF
+//                .csrf(AbstractHttpConfigurer::disable) // 세션 관련 내용 CSRF
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**") // H2 콘솔은 CSRF 예외
+                )
+                .headers(headers ->
+                        headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함
                 )
                 .addFilterBefore(jwtSecurityFilter, SecurityContextHolderAwareRequestFilter.class) // JWt 필터추가
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
-                .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 비활성화
+//                .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // BasicAuthenticationFilter 비활성화
                 .logout(AbstractHttpConfigurer::disable) // LogoutFilter 비활성화
                 .authorizeHttpRequests(auth -> auth

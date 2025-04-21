@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ecomos/auth")
+@RequestMapping("/ecomos")
 public class AuthController {
 
     private final AuthService authService;
 
     // 회원가입
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public String signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
         authService.signup(signupRequestDto);
         return "회원가입 완료";
     }
 
     // 로그인
-    @PostMapping("/signin")
+    @PostMapping("/auth/signin")
     public ResponseEntity<String> signin(@Valid @RequestBody SigninRequestDto signinRequestDto) {
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, authService.signin(signinRequestDto)).body("SUCCESS");
     }

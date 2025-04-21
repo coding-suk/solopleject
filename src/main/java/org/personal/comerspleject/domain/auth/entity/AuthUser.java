@@ -1,4 +1,4 @@
-package org.personal.comerspleject.config.jwt;
+package org.personal.comerspleject.domain.auth.entity;
 
 import lombok.Getter;
 import org.personal.comerspleject.domain.user.entity.UserRole;
@@ -23,11 +23,14 @@ public class AuthUser {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public AuthUser(Long id, String name, String email, UserRole role) {
+    private final String address;
+
+    public AuthUser(Long id, String name, String email, UserRole role, String address) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.authorities = List.of(new SimpleGrantedAuthority(role.name()));
+        this.address = address;
     }
 
 }
