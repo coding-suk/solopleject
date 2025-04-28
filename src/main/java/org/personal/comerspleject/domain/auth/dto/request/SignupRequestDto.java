@@ -22,7 +22,7 @@ public class SignupRequestDto {
     private String password;
 
     @NotBlank
-    private String userRole;
+    private String role;
 
     @NotBlank
     private String address;
