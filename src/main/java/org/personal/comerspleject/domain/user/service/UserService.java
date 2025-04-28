@@ -126,5 +126,18 @@ public class UserService {
         }
 
         String email = tokenService.getEmailFromToken(token);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        // 탈퇴한 사용자는 제외
+        if(user.getIsdeleted()) {
+            throw new EcomosException(ErrorCode._DELETED_USER);
+        }
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.updatePassword(encodedPassword);
+
+        tokenService.removeToken(token);
     }
 }
