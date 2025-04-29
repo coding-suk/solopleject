@@ -15,12 +15,14 @@ import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.user.entity.UserRole;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -50,8 +52,15 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 if(SecurityContextHolder.getContext().getAuthentication() == null) {
                     AuthUser authUser = new AuthUser(userId, name, email, userRole, address);
 
+                    // 권한 부여
+                    List<SimpleGrantedAuthority> authorities =
+                            List.of(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
+
+                    // 권한 포함한 인증 객체 생성
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+
+                    // 시큐리티 컨텍스트에 등록
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch(SecurityException | MalformedJwtException e) {
