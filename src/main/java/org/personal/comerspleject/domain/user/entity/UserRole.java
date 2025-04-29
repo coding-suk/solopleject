@@ -6,7 +6,7 @@ import org.personal.comerspleject.config.exception.ErrorCode;
 import java.util.Arrays;
 
 public enum UserRole {
-    USER, ADMIN;
+    USER, SELLER ,ADMIN;
 
     public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())
