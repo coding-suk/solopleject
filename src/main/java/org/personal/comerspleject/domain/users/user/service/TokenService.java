@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.service;
+package org.personal.comerspleject.domain.users.user.service;
 
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;

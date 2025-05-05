@@ -1,16 +1,16 @@
-package org.personal.comerspleject.domain.user.service;
+package org.personal.comerspleject.domain.users.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
-import org.personal.comerspleject.domain.user.dto.request.UpdateUserRequestDto;
-import org.personal.comerspleject.domain.user.dto.request.afterlogin.ChangePasswordRequestDto;
-import org.personal.comerspleject.domain.user.dto.response.UpdateUserResponseDto;
-import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
-import org.personal.comerspleject.domain.user.entity.User;
-import org.personal.comerspleject.domain.user.entity.UserRole;
-import org.personal.comerspleject.domain.user.repository.UserRepository;
+import org.personal.comerspleject.domain.users.user.dto.request.UpdateUserRequestDto;
+import org.personal.comerspleject.domain.users.user.dto.request.afterlogin.ChangePasswordRequestDto;
+import org.personal.comerspleject.domain.users.user.dto.response.UpdateUserResponseDto;
+import org.personal.comerspleject.domain.users.user.dto.request.DeleteUserRequestDto;
+import org.personal.comerspleject.domain.users.user.entity.User;
+import org.personal.comerspleject.domain.users.user.entity.UserRole;
+import org.personal.comerspleject.domain.users.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

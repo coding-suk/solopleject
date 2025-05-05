@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.service;
+package org.personal.comerspleject.domain.users.user.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

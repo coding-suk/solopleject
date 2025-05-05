@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
-import org.personal.comerspleject.domain.user.entity.UserRole;
+import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;

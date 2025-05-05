@@ -1,14 +1,14 @@
-package org.personal.comerspleject.domain.user.controller;
+package org.personal.comerspleject.domain.users.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.common.dto.response.CommonResponseDto;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
-import org.personal.comerspleject.domain.user.dto.request.afterlogin.ChangePasswordRequestDto;
-import org.personal.comerspleject.domain.user.dto.request.DeleteUserRequestDto;
-import org.personal.comerspleject.domain.user.dto.request.sendemail.NeedEmailResetPassword;
-import org.personal.comerspleject.domain.user.dto.request.sendemail.SendPasswordEmailRequestDto;
-import org.personal.comerspleject.domain.user.service.TokenService;
-import org.personal.comerspleject.domain.user.service.UserService;
+import org.personal.comerspleject.domain.users.user.dto.request.afterlogin.ChangePasswordRequestDto;
+import org.personal.comerspleject.domain.users.user.dto.request.DeleteUserRequestDto;
+import org.personal.comerspleject.domain.users.user.dto.request.sendemail.NeedEmailResetPassword;
+import org.personal.comerspleject.domain.users.user.dto.request.sendemail.SendPasswordEmailRequestDto;
+import org.personal.comerspleject.domain.users.user.service.TokenService;
+import org.personal.comerspleject.domain.users.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

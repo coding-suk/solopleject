@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.dto.request.sendemail;
+package org.personal.comerspleject.domain.users.user.dto.request.sendemail;
 
 import lombok.Getter;
 
