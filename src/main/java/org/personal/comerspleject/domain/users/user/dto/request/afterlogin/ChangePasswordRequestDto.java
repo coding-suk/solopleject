@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.dto.request.afterlogin;
+package org.personal.comerspleject.domain.users.user.dto.request.afterlogin;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

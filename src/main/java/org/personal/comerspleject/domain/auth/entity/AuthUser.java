@@ -1,7 +1,7 @@
 package org.personal.comerspleject.domain.auth.entity;
 
 import lombok.Getter;
-import org.personal.comerspleject.domain.user.entity.UserRole;
+import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
