@@ -1,9 +1,9 @@
-package org.personal.comerspleject.domain.admin.controller;
+package org.personal.comerspleject.domain.users.admin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.personal.comerspleject.domain.admin.dto.request.AdminUpdateRequestDto;
-import org.personal.comerspleject.domain.admin.dto.response.AdminResponseDto;
-import org.personal.comerspleject.domain.admin.service.AdminService;
+import org.personal.comerspleject.domain.users.admin.dto.request.AdminUpdateRequestDto;
+import org.personal.comerspleject.domain.users.admin.dto.response.AdminResponseDto;
+import org.personal.comerspleject.domain.users.admin.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

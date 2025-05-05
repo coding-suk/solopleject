@@ -1,13 +1,13 @@
-package org.personal.comerspleject.domain.admin.service;
+package org.personal.comerspleject.domain.users.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
-import org.personal.comerspleject.domain.admin.dto.request.AdminUpdateRequestDto;
-import org.personal.comerspleject.domain.admin.dto.response.AdminResponseDto;
-import org.personal.comerspleject.domain.user.entity.User;
-import org.personal.comerspleject.domain.user.entity.UserRole;
-import org.personal.comerspleject.domain.user.repository.UserRepository;
+import org.personal.comerspleject.domain.users.admin.dto.request.AdminUpdateRequestDto;
+import org.personal.comerspleject.domain.users.admin.dto.response.AdminResponseDto;
+import org.personal.comerspleject.domain.users.user.entity.User;
+import org.personal.comerspleject.domain.users.user.entity.UserRole;
+import org.personal.comerspleject.domain.users.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +30,8 @@ public class AdminService {
 
     // 유저 검색(이름 or 이메일)
     public List<AdminResponseDto> searchUser(String keyword) {
-        List<User> users = userRepository.findByAll().stream()
-                .filter(user -> user.getEmail().contains(keyword) || user.getName().contains(keyword))
-                .collect(Collectors.toList());
-        return users.stream().map(AdminResponseDto :: from).collect(Collectors.toList());
+        List<User> users = userRepository.findByNameContainingOrEmailContaining(keyword, keyword);
+        return users.stream().map(AdminResponseDto::from).collect(Collectors.toList());
     }
 
     // 유저 제거

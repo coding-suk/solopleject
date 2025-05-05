@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.admin.dto.request;
+package org.personal.comerspleject.domain.users.admin.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

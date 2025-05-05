@@ -1,9 +1,9 @@
-package org.personal.comerspleject.domain.admin.dto.response;
+package org.personal.comerspleject.domain.users.admin.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.personal.comerspleject.domain.user.entity.User;
-import org.personal.comerspleject.domain.user.entity.UserRole;
+import org.personal.comerspleject.domain.users.user.entity.User;
+import org.personal.comerspleject.domain.users.user.entity.UserRole;
 
 @Getter
 @AllArgsConstructor
