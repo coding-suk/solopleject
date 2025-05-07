@@ -1,11 +1,12 @@
-package org.personal.comerspleject.domain.user.repository;
+package org.personal.comerspleject.domain.users.user.repository;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.personal.comerspleject.domain.user.entity.User;
+import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -14,5 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(@NotBlank @Email String email);
 
-    Collection<User> findByAll();
+    List<User> findByNameContainingOrEmailContaining(String keyword, String keyword1);
+
+//    Collection<User> findAll();
 }
