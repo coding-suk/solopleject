@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.dto.response;
+package org.personal.comerspleject.domain.users.user.dto.response;
 
 import lombok.Getter;
 

@@ -1,11 +1,9 @@
-package org.personal.comerspleject.domain.user.entity;
+package org.personal.comerspleject.domain.users.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.aot.generate.GeneratedTypeReference;
 
 import java.io.Serializable;
 

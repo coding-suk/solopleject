@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.user.dto.request;
+package org.personal.comerspleject.domain.users.user.dto.request;
 
 import lombok.Getter;
 
