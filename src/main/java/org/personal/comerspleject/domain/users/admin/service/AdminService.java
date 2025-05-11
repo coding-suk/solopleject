@@ -5,6 +5,8 @@ import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.users.admin.dto.request.AdminUpdateRequestDto;
 import org.personal.comerspleject.domain.users.admin.dto.response.AdminResponseDto;
+import org.personal.comerspleject.domain.users.seller.dto.response.ProductResponseDto;
+import org.personal.comerspleject.domain.users.seller.repository.ProductRepository;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     // 유저 조회(전체)
     public List<AdminResponseDto> getAllUsers() {
@@ -66,5 +69,20 @@ public class AdminService {
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
         UserRole newRole = UserRole.of(role);
         user.updateUserRole(newRole);
+    }
+
+    // 특정 판매자 상품조회
+    public List<ProductResponseDto> getProductBySellerId(Long sellerId) {
+        // 판매자 존재 여부
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        if(!seller.getRole().equals(UserRole.SELLER)) {
+            throw new EcomosException(ErrorCode._INVALID_USER_ROLE);
+        }
+        return productRepository.findBySellerId(sellerId).stream()
+                .filter(p-> !p.isDeleted())// 삭제된  상품 제외
+                .map(ProductResponseDto::from)
+                .collect(Collectors.toList());
     }
 }
