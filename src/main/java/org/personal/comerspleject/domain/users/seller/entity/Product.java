@@ -44,6 +44,11 @@ public class Product {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    private boolean isBlind = false;
+
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status = ProductStatus.PENDING;
+
     public void update(String name, String description, Integer price, Integer stock, ProductCategory category, String imageURL) {
         this.name = name;
         this.description = description;
@@ -67,6 +72,19 @@ public class Product {
             throw new EcomosException(ErrorCode._OUT_OF_STOCK);
         }
         this.stock -= quantity;
+    }
+
+    //
+    public void blind() {
+        this.isBlind = true;
+    }
+
+    public void approve() {
+        this.status = ProductStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = ProductStatus.REJECTED;
     }
 
 }
