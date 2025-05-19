@@ -28,7 +28,7 @@ public class AdminController {
     // 회원 검색
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<AdminResponseDto>> searchUser(@RequestBody String keyword) {
+    public ResponseEntity<List<AdminResponseDto>> searchUser(@RequestParam String keyword) {
         return ResponseEntity.ok(adminService.searchUser(keyword));
     }
 
