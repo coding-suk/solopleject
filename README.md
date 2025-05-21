@@ -5,6 +5,23 @@
 
 ---
 
+## 📚 기술 스택
+
+- Language: Java 17
+- Framework: Spring Boot 3.x
+- DB: MySQL
+- ORM: Spring Data JPA
+- Security: Spring Security + JWT
+- Test: JUnit5, Mockito
+- 기타: Redis, Swagger, Postman
+
+## 📌 프로젝트 개요
+
+Spring Boot 기반으로 구현된 E-Commerce 백엔드 API 프로젝트입니다.  
+회원가입부터 상품 관리, 주문/결제, 관리자 대시보드까지 모든 기능을 혼자 설계하고 구현하였습니다.
+
+---
+
 ## 📌 목차
 
 1. [사용자 기능 (회원)](#사용자-기능-회원)
