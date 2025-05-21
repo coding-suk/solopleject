@@ -21,6 +21,7 @@ public class UserController {
     private final UserService userService;
     private final TokenService tokenService;
 
+    // 회원탈퇴
     @DeleteMapping()
     public ResponseEntity<String> deletedUSer(@AuthenticationPrincipal AuthUser authUser,
                                               @RequestBody DeleteUserRequestDto deleteUserRequestDto) {
