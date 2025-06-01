@@ -22,24 +22,24 @@ public class AdminProductController {
     }
 
     // 상품 블라인드
-    @PatchMapping("/{productId}/blind")
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{productId}/blind")
     public ResponseEntity<String> blindProduct(@PathVariable Long productId) {
         adminProductService.blindProduct(productId);
         return ResponseEntity.ok("상품이 블라인드 처리되었습니다.");
     }
 
     // 상품 승인
-    @PatchMapping("/{productId}/approve")
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{productId}/approve")
     public ResponseEntity<String> approveProduct(@PathVariable Long productId) {
         adminProductService.approveProduct(productId);
         return ResponseEntity.ok("상품이 승인되었습니다.");
     }
 
     // 상품 반려
-    @PatchMapping("/{productId}/reject")
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{productId}/reject")
     public ResponseEntity<String> rejectProduct(@PathVariable Long productId) {
         adminProductService.rejectProduct(productId);
         return ResponseEntity.ok("상품이 반려되었습니다.");

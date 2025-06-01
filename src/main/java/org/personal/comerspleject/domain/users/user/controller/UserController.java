@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // 토큰 인증 후 비밀번호 입력 페이지 반환(간단 HTML)
-    @PostMapping("/pasword/verify")
+    @PostMapping("/password/verify")
     public ResponseEntity<String> verifyToken(@RequestParam("token") String token) {
         if (!tokenService.isValid(token)) {
             return ResponseEntity.badRequest().body("<h3>유효하지 않은 또는 만료된 토큰입니다.</h3>");

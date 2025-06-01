@@ -7,6 +7,7 @@ import org.personal.comerspleject.domain.users.seller.dto.response.ProductRespon
 import org.personal.comerspleject.domain.users.seller.service.ProductService;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ecomos/sellers/")
+@RequestMapping("/ecomos/sellers/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -47,6 +48,7 @@ public class ProductController {
 
     // 특정 판매자의 상품 목록 조회 (관리자 전용)
     @GetMapping("/admin/{sellerId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProductResponseDto>> getProductsBySellerId(@PathVariable Long sellerId) {
         return ResponseEntity.ok(productService.getProductBySellerId(sellerId));
     }

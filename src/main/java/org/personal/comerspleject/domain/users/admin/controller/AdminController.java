@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ecmos/admin")
 @RequiredArgsConstructor
+@RequestMapping("/ecmos/admin/users")
 public class AdminController {
 
     private final AdminService adminService;
@@ -20,7 +20,7 @@ public class AdminController {
     // 보안 처리
     @PreAuthorize("hasRole('ADMIN')")
     // 회원 전체 조회
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<List<AdminResponseDto>> getAllMembers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
@@ -32,18 +32,9 @@ public class AdminController {
         return ResponseEntity.ok(adminService.searchUser(keyword));
     }
 
-    // 회원 삭제
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        adminService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
-    }
-
-
     // 회원 정보 수정
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/users/{userId}")
+    @PutMapping("/{userId}")
     public ResponseEntity<String> updateUserInfo(@PathVariable Long userId,
                                                  @RequestBody AdminUpdateRequestDto adminUpdateRequestDto) {
         adminService.updateUserInfo(userId, adminUpdateRequestDto);
@@ -52,17 +43,25 @@ public class AdminController {
 
     // 회원 상세 조회
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<AdminResponseDto> getUserDetail(@PathVariable Long userId) {
         return ResponseEntity.ok(adminService.getUserDetail(userId));
     }
 
     // 권한 변경
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/users/{userId}/role")
+    @PutMapping("/{userId}/role")
     public ResponseEntity<String> changeUserRole(@PathVariable Long userId,
                                                  @RequestParam String role) {
         adminService.changeUserRole(userId, role);
         return ResponseEntity.ok("권한이 변경되었습니다");
+    }
+
+    // 회원 삭제
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        adminService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }
