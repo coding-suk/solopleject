@@ -22,7 +22,17 @@ public enum ErrorCode {
     _DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다"),
     _INVALID_PASSWORD_FORM(HttpStatus.BAD_REQUEST, "유효하지 않는 비밀번호 형식입니다"),
 
-    _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다.");
+    _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+
+    _OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다"),
+    _NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다"),
+    _INVALID_USER_ROLE(HttpStatus.UNAUTHORIZED, "유효하지 않는 유저 role입니다"),
+
+
+    _FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+
+    _EMPTY_CART(HttpStatus.NOT_FOUND, "장바구니가 없습니다"),
+    _NOT_FOUND_PRODUCT_IN_CART(HttpStatus.NOT_FOUND, "장바구니에 해당 상품이 없습니다");
 
 
 
