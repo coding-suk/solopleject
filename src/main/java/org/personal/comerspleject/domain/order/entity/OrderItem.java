@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.personal.comerspleject.domain.users.seller.entity.Product;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 public class OrderItem {
