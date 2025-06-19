@@ -1,7 +1,6 @@
 package org.personal.comerspleject.domain.order.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.personal.comerspleject.domain.users.user.entity.User;
@@ -12,6 +11,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -26,7 +26,7 @@ public class Order {
     private int totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private final List<OrderItem> orderItems = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -48,4 +48,10 @@ public class Order {
                 .mapToInt(item -> item.getPrice() * item.getQuantity())
                 .sum();
     }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+
 }
