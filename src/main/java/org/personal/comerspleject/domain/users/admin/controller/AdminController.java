@@ -20,7 +20,7 @@ public class AdminController {
     // 보안 처리
     @PreAuthorize("hasRole('ADMIN')")
     // 회원 전체 조회
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<AdminResponseDto>> getAllMembers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
