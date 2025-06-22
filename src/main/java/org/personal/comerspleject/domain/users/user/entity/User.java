@@ -31,6 +31,8 @@ public class User implements Serializable {
 
     private String address;
 
+    private int point = 0;
+
     // 회원탈퇴 유무
     private Boolean isdeleted = false;
 
@@ -73,4 +75,9 @@ public class User implements Serializable {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void addPoint(int reword) {
+        this.point += reword;
+    }
+
 }
