@@ -80,7 +80,7 @@ public class AdminService {
         if(!seller.getRole().equals(UserRole.SELLER)) {
             throw new EcomosException(ErrorCode._INVALID_USER_ROLE);
         }
-        return productRepository.findBySellerId(sellerId).stream()
+        return productRepository.findBySellerUid(sellerId).stream()
                 .filter(p-> !p.isDeleted())// 삭제된  상품 제외
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());

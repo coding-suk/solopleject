@@ -41,7 +41,7 @@ public class Product {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
+    @JoinColumn(name = "seller_uid", nullable = false)
     private User seller;
 
     private boolean isBlind = false;
