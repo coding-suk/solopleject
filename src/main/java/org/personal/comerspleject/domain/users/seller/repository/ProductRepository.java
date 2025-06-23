@@ -13,7 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByIsDeletedFalse();
 
     //판매자별 상품 조회
-    List<Product> findBySellerId(Long sellerId);
+    List<Product> findBySellerUid(Long sellerId);
 
     List<Product> findBySellerAndIsDeletedFalse(User seller);
 
