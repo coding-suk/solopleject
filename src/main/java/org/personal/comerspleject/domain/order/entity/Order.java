@@ -3,6 +3,9 @@ package org.personal.comerspleject.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.aspectj.weaver.ast.Or;
+import org.personal.comerspleject.config.exception.EcomosException;
+import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.users.user.entity.User;
 
 import java.util.ArrayList;
@@ -51,6 +54,19 @@ public class Order {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public void updateStatus(OrderStatus newStatus) {
+        // 현재 상태 기준으로 유효한 전이만 허용 (선택사항)
+        if (this.status == OrderStatus.WAITING_FOR_PAYMENT && newStatus == OrderStatus.WAITING_FOR_DELIVERY) {
+            this.status = newStatus;
+        } else if (this.status == OrderStatus.WAITING_FOR_DELIVERY && newStatus == OrderStatus.DELIVERY) {
+            this.status = newStatus;
+        } else if (this.status == OrderStatus.DELIVERY && newStatus == OrderStatus.DELIVERY_COMPLETED) {
+            this.status = newStatus;
+        } else {
+            throw new EcomosException(ErrorCode._INVALID_ORDER_STATUS_TRANSITION);
+        }
     }
 
 

@@ -75,22 +75,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_PAYMENT));
 
-        if(payment.getStatus() != PaymentStatus.READY) {
-            throw new EcomosException(ErrorCode._ALREADY_PAID_OR_INVALID);
-        }
-
-        payment.completePayment(); // 상태 변경
-
-        Order order = payment.getOrder();
-        if(order.getStatus() != OrderStatus.WAITING_FOR_PAYMENT) {
-            throw new EcomosException(ErrorCode._NOT_AVAILABLE_FOR_PAYMENT);
-        }
-
-        order.setStatus(OrderStatus.WAITING_FOR_DELIVERY); // 주문 상태 변경
-
-        // 포인트 적립 (예 10%)
-        int reward = (int)(payment.getAmount() * 0.1);
-        order.getUser().addPoint(reward);
+        payment.completeWithOrder();
 
     }
 
