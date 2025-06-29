@@ -13,6 +13,8 @@ import org.personal.comerspleject.domain.payment.dto.PaymentSnapshot;
 import org.personal.comerspleject.domain.payment.entity.Payment;
 import org.personal.comerspleject.domain.payment.entity.PaymentStatus;
 import org.personal.comerspleject.domain.payment.repository.PaymentRepository;
+import org.personal.comerspleject.domain.point.service.PointService;
+import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final ObjectMapper objectMapper;
+    private final PointService pointService;
 
     /*
     * 결제 준비
@@ -70,13 +73,30 @@ public class PaymentService {
     * */
 
     @Transactional
-    public void completeMockPayment(Long paymentId) {
+    public void completeMockPayment(Long paymentId, int usePoint) {
 
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_PAYMENT));
 
         payment.completeWithOrder();
 
+        // 포인트 적립
+        int earned = (int)(payment.getAmount() * 0.05); // 5% 적립
+        pointService.earnPoint(payment.getOrder().getUser(), earned);
+
+        Order order = payment.getOrder();
+        User user = order.getUser();
+
+        int finalAmount = order.getTotalPrice();
+
+        // 사용
+        if(usePoint > 0) {
+            pointService.usePoint(user, usePoint); // 차감
+            finalAmount -= usePoint; // 차감 반영
+        }
+
+        payment.setAmount(finalAmount); // 결제 금액 저장
+        payment.completeWithOrder(); // 상태 전이
     }
 
     private PaymentSnapshot createSnapshotFromOrder(Order order) {
