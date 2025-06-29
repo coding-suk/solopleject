@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService{
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
         // 새 주문 객체 생성
-        Order order = new Order(user, OrderStatus.Waiting_for_delivery);
+        Order order = new Order(user, OrderStatus.WAITING_FOR_DELIVERY);
 
         // 요청된 상품들을 기반으로 orderItem 생성
         orderRequestDto.getItems().forEach(orderItemRequestDto -> {
