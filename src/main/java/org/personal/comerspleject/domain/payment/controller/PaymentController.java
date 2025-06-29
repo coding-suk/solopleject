@@ -3,10 +3,7 @@ package org.personal.comerspleject.domain.payment.controller;
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.domain.payment.service.PaymentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,8 +21,9 @@ public class PaymentController {
 
     // 결제 완료
     @PostMapping("/complete/{paymentId}")
-    public ResponseEntity<String> completePayment(@PathVariable Long paymentId) {
-        paymentService.completeMockPayment(paymentId);
+    public ResponseEntity<String> completePayment(@PathVariable Long paymentId,
+                                                  @RequestParam int usePoint) {
+        paymentService.completeMockPayment(paymentId, usePoint);
         return ResponseEntity.ok("결제가 완료 되었습니다");
     }
 
