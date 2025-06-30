@@ -27,11 +27,17 @@ public class PointHistory {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime expiredAt; // 만료일
+
     public PointHistory(User user, int amount, PointType type) {
         this.user = user;
         this.amount = amount;
         this.type = type;
         this.createdAt = LocalDateTime.now();
+
+        if(type == PointType.EARNED) {
+            this.expiredAt = this.createdAt.plusMonths(6); // 반년 유효  
+        }
     }
 
 }

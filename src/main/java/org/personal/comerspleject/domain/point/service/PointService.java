@@ -13,6 +13,7 @@ import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,13 +42,22 @@ public class PointService {
     @Transactional
     public void usePoint(User user, int amount) {
 
+        // 유효 포인트 확인
+        List<PointHistory> histories = pointHistoryRepository.findByUserTypeAndExpiresAtAfter(user, PointType.EARNED, LocalDateTime.now());
+
+        int usableTotal = histories.stream().mapToInt(PointHistory::getAmount).sum();
+        if(usableTotal < amount) {
+            throw new EcomosException(ErrorCode._NOT_ENOUGH_POINT);
+        }
+
+        // 포인트 차감
         Point point = pointRepository.findByUser(user)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_POINT));
 
         point.usePoint(amount);
 
+        // 이력 저장
         pointHistoryRepository.save(new PointHistory(user, amount * -1, PointType.USED));
-
     }
 
     // 조회
