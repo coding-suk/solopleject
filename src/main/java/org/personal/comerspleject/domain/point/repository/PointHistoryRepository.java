@@ -22,4 +22,6 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
     List<PointHistory> findByUserTypeAndExpiresAtAfter(User user, PointType pointType, LocalDateTime now);
 
     int sumByUserAndType(@Param("user") User user, @Param("type") PointType type);
+
+    List<PointHistory> findByTypeAndExpiresAtBefore(PointType type, LocalDateTime now);
 }

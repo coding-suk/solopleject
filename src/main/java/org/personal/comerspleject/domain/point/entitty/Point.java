@@ -39,4 +39,8 @@ public class Point {
         this.totalPoint -= amount;
     }
 
+    public void subtractPoint(int amount) {
+        this.totalPoint = Math.max(0, this.totalPoint - amount);
+    }
+
 }
