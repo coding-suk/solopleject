@@ -32,7 +32,7 @@ public class PointController {
     }
 
     // 페이지는 10페이지 단위로 보임
-    @GetMapping
+    @GetMapping("/page")
     public Page<PointHistoryResponseDto> getPointHistory(@AuthenticationPrincipal User user,
                                                          @PageableDefault(size = 10) Pageable pageable) {
         return pointQueryService.getPointHistory(user, pageable);
