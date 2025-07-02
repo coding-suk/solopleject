@@ -43,7 +43,7 @@ public class PointService {
     public void usePoint(User user, int amount) {
 
         // 유효 포인트 확인
-        List<PointHistory> histories = pointHistoryRepository.findByUserTypeAndExpiresAtAfter(user, PointType.EARNED, LocalDateTime.now());
+        List<PointHistory> histories = pointHistoryRepository.findByUserAndTypeAndExpiredAtAfter(user, PointType.EARNED, LocalDateTime.now());
 
         int usableTotal = histories.stream().mapToInt(PointHistory::getAmount).sum();
         if(usableTotal < amount) {
@@ -62,7 +62,7 @@ public class PointService {
 
     // 조회
     public List<PointHistoryResponseDto> getPointHistory(User user) {
-        return pointHistoryRepository.findByUserOrderCreatedAtDesc(user).stream()
+        return pointHistoryRepository.findByUserOrderByCreatedAtDesc(user).stream()
                 .map(PointHistoryResponseDto::new)
                 .collect(Collectors.toList());
     }

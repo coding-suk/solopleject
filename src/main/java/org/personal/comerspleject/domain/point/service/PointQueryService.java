@@ -21,7 +21,7 @@ public class PointQueryService {
 
     // 페이지
     public Page<PointHistoryResponseDto> getPointHistory(User user, Pageable pageable) {
-        return pointHistoryRepository.findByUserOrderByCreatedAtDesc(user, pageable).
+        return pointHistoryRepository.findByUser(user, pageable).
                 map(PointHistoryResponseDto::new);
     }
 
