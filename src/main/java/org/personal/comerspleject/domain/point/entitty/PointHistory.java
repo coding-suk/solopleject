@@ -17,7 +17,8 @@ public class PointHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long phId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_uid")
     private User user;
 
     private int amount;
@@ -43,6 +44,11 @@ public class PointHistory {
     }
     public void markAsExpired() {
         this.expired = true;
+    }
+
+    // 테스트 용
+    public void setExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
     }
 
 }
