@@ -26,8 +26,11 @@ public class PointExpirationScheduler {
     @Transactional
     public void expirePoints() {
 
+        // 로그
+        System.out.println("/[Test] 포인트 소멸 스케줄러 실행 중");
+
         List<PointHistory> expiredHistories = pointHistoryRepository
-                .findByTypeAndExpiresAtBefore(PointType.EARNED, LocalDateTime.now());
+                .findByTypeAndExpiredAtBefore(PointType.EARNED, LocalDateTime.now());
 
         for (PointHistory history : expiredHistories) {
             if(history.isExpired()) continue; // 이미 처리된 내용이면 넘김
@@ -48,6 +51,10 @@ public class PointExpirationScheduler {
 
             history.markAsExpired();
 
+            System.out.println("[Expired] user = " + history.getUser().getUid()
+            + ", amount = " + expiredAmount);
         }
+
+        System.out.println("[Test] 포인트 소멸 종료");
     }
 }
