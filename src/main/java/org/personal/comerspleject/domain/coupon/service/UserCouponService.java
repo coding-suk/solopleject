@@ -1,6 +1,7 @@
 package org.personal.comerspleject.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.coupon.entity.UserCoupon;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserCouponService {
 
     private final UserCouponRepository userCouponRepository;
@@ -36,6 +38,7 @@ public class UserCouponService {
     public void expireCoupon() {
         List<UserCoupon> toExpire = userCouponRepository.findCouponsToExpire(LocalDateTime.now());
         toExpire.forEach(UserCoupon::markAsExpired);
+        log.info("만료된 쿠폰 수 : "+toExpire.size());
     }
 
 
