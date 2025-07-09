@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -35,6 +36,14 @@ public class User implements Serializable {
 
     // 회원탈퇴 유무
     private Boolean isdeleted = false;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void perPersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public User(String email, String password, String name, UserRole role, String address) {
         this.email = email;

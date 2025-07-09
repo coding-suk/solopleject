@@ -6,6 +6,8 @@ import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.JwtUtil;
 import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
 import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
+import org.personal.comerspleject.domain.coupon.policy.CouponPolicy;
+import org.personal.comerspleject.domain.coupon.policy.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
@@ -23,6 +25,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CouponPolicyRunner couponPolicyRunner;
 
     // 이메일 유효성 검사 정규 표현식
     private static final String EMAIL_PATTERN =
@@ -64,6 +67,9 @@ public class AuthService {
         );
         // 유저 생성 후 저장
         userRepository.save(newUser);
+
+        // 쿠폰 자동 발급
+        couponPolicyRunner.run(newUser);
     }
 
     // 이메일 유효성 검사 메서드
