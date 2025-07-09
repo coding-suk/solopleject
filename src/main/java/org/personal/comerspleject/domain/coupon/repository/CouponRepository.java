@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface CouponRepository  extends JpaRepository<Coupon, Long> {
 
@@ -15,4 +16,5 @@ public interface CouponRepository  extends JpaRepository<Coupon, Long> {
     // 만료되지 않은 쿠폰만
     List<Coupon> findByExpiredAtAfter(LocalDateTime now);
 
+    Optional<Coupon> findByName(String couponName);
 }
