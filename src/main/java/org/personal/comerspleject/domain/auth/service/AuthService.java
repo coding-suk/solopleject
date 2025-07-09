@@ -63,7 +63,8 @@ public class AuthService {
                 encodedPassword,
                 signupRequestDto.getName(),
                 role,
-                signupRequestDto.getAddress()
+                signupRequestDto.getAddress(),
+                signupRequestDto.getBirthDate()
         );
         // 유저 생성 후 저장
         userRepository.save(newUser);

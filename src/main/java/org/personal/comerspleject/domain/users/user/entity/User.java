@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,20 +39,27 @@ public class User implements Serializable {
     // 회원탈퇴 유무
     private Boolean isdeleted = false;
 
+    // 회원가입 당시
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    // 자동 설정
     @PrePersist
     public void perPersist() {
         this.createdAt = LocalDateTime.now();
     }
 
-    public User(String email, String password, String name, UserRole role, String address) {
+    // 생일 쿠폰 발급
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
+
+    public User(String email, String password, String name, UserRole role, String address, LocalDate birthDate) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.role = role;
         this.address = address;
+        this.birthDate = birthDate;
     }
 
     // AuthUser로 User 만들 때
