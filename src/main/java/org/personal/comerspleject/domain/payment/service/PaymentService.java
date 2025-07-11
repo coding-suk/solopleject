@@ -14,6 +14,7 @@ import org.personal.comerspleject.domain.payment.entity.Payment;
 import org.personal.comerspleject.domain.payment.entity.PaymentStatus;
 import org.personal.comerspleject.domain.payment.repository.PaymentRepository;
 import org.personal.comerspleject.domain.point.service.PointService;
+import org.personal.comerspleject.domain.policy.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ObjectMapper objectMapper;
     private final PointService pointService;
+    private final CouponPolicyRunner couponPolicyRunner;
 
     /*
     * 결제 준비
@@ -97,6 +99,8 @@ public class PaymentService {
 
         payment.setAmount(finalAmount); // 결제 금액 저장
         payment.completeWithOrder(); // 상태 전이
+
+        couponPolicyRunner.run(user);
     }
 
     private PaymentSnapshot createSnapshotFromOrder(Order order) {
