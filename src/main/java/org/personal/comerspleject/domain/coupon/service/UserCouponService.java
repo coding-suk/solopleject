@@ -8,6 +8,7 @@ import org.personal.comerspleject.domain.coupon.entity.UserCoupon;
 import org.personal.comerspleject.domain.coupon.repository.UserCouponRepository;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +40,23 @@ public class UserCouponService {
         List<UserCoupon> toExpire = userCouponRepository.findCouponsToExpire(LocalDateTime.now());
         toExpire.forEach(UserCoupon::markAsExpired);
         log.info("만료된 쿠폰 수 : "+toExpire.size());
+    }
+
+    @Transactional
+    public void notifyCouponsExpiringTomorrow() {
+
+        LocalDateTime start = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime end = start.plusDays(1).minusNanos(1);
+
+        List<UserCoupon> expiring = userCouponRepository.findCouponsExpiringTomorrow(start, end);
+
+        for(UserCoupon uc : expiring) {
+            log.info("[쿠폰 소멸 알림] 유저: {}, 쿠폰: {}, 만료일: {}",
+                    uc.getUser().getEmail(),
+                    uc.getCoupon().getName(),
+                    uc.getExpiredAt());
+        }
+
     }
 
 
