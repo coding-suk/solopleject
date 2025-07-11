@@ -5,16 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
+import org.personal.comerspleject.domain.coupon.entity.Coupon;
+import org.personal.comerspleject.domain.coupon.entity.UserCoupon;
+import org.personal.comerspleject.domain.coupon.repository.UserCouponRepository;
 import org.personal.comerspleject.domain.order.entity.Order;
 import org.personal.comerspleject.domain.order.entity.OrderItem;
 import org.personal.comerspleject.domain.order.entity.OrderStatus;
 import org.personal.comerspleject.domain.order.repository.OrderRepository;
+import org.personal.comerspleject.domain.payment.dto.CompletePaymentRequestDto;
 import org.personal.comerspleject.domain.payment.dto.PaymentSnapshot;
 import org.personal.comerspleject.domain.payment.entity.Payment;
-import org.personal.comerspleject.domain.payment.entity.PaymentStatus;
 import org.personal.comerspleject.domain.payment.repository.PaymentRepository;
 import org.personal.comerspleject.domain.point.service.PointService;
-import org.personal.comerspleject.domain.policy.CouponPolicyRunner;
+import org.personal.comerspleject.domain.policyAndscheduler.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,7 @@ public class PaymentService {
     private final ObjectMapper objectMapper;
     private final PointService pointService;
     private final CouponPolicyRunner couponPolicyRunner;
+    private final UserCouponRepository userCouponRepository;
 
     /*
     * 결제 준비
@@ -75,31 +79,64 @@ public class PaymentService {
     * */
 
     @Transactional
-    public void completeMockPayment(Long paymentId, int usePoint) {
+    public void completeMockPayment(Long paymentId, CompletePaymentRequestDto requestDto) {
 
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_PAYMENT));
 
         payment.completeWithOrder();
 
-        // 포인트 적립
-        int earned = (int)(payment.getAmount() * 0.05); // 5% 적립
-        pointService.earnPoint(payment.getOrder().getUser(), earned);
-
         Order order = payment.getOrder();
         User user = order.getUser();
-
+        int originalAmount = order.getTotalPrice();
         int finalAmount = order.getTotalPrice();
 
-        // 사용
-        if(usePoint > 0) {
-            pointService.usePoint(user, usePoint); // 차감
-            finalAmount -= usePoint; // 차감 반영
+        // 쿠폰 적용
+        if(requestDto.getUserCouponId() != null) {
+            UserCoupon userCoupon = userCouponRepository.findById(requestDto.getUserCouponId())
+                    .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER_COUPON));
+
+            if(!userCoupon.getUser().getUid().equals(user.getUid())) {
+                throw new EcomosException(ErrorCode._NOT_FOUND_COUPON);
+            }
+
+            if(userCoupon.isUsed() || userCoupon.isExpired()) {
+                throw new EcomosException(ErrorCode._INVALID_COUPON);
+            }
+
+            Coupon coupon = userCoupon.getCoupon();
+            if(originalAmount < coupon.getMinOrderAmount()) {
+                throw new EcomosException(ErrorCode._NOT_ENOUGH_ORDER_PRICE_FOR_COUPON);
+            }
+
+            int discount;
+            if(coupon.isPercent()) {
+                discount = (int) (originalAmount * (coupon.getDiscountAmount() / 100.0));
+            } else {
+                discount = coupon.getDiscountAmount();
+            }
+
+            finalAmount -= discount;
+            userCoupon.markAsUsed();;
+        }
+
+        // 포인트 사용
+        if(requestDto.getUsePoint() > 0) {
+            pointService.usePoint(user, requestDto.getUsePoint()); // 차감
+            finalAmount -= requestDto.getUsePoint(); // 차감 반영
         }
 
         payment.setAmount(finalAmount); // 결제 금액 저장
         payment.completeWithOrder(); // 상태 전이
 
+        // 주문 상태 변경
+        order.setStatus(OrderStatus.WAITING_FOR_DELIVERY);
+
+        // 포인트 적립
+        int earned = (int)(payment.getAmount() * 0.05); // 5% 적립
+        pointService.earnPoint(payment.getOrder().getUser(), earned);
+
+        // 첫 주문 정챙
         couponPolicyRunner.run(user);
     }
 

@@ -1,6 +1,7 @@
 package org.personal.comerspleject.domain.payment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.personal.comerspleject.domain.payment.dto.CompletePaymentRequestDto;
 import org.personal.comerspleject.domain.payment.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,8 @@ public class PaymentController {
     // 결제 완료
     @PostMapping("/complete/{paymentId}")
     public ResponseEntity<String> completePayment(@PathVariable Long paymentId,
-                                                  @RequestParam int usePoint) {
-        paymentService.completeMockPayment(paymentId, usePoint);
+                                                  @RequestParam CompletePaymentRequestDto requestDto) {
+        paymentService.completeMockPayment(paymentId, requestDto);
         return ResponseEntity.ok("결제가 완료 되었습니다");
     }
 
