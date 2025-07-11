@@ -1,7 +1,7 @@
 package org.personal.comerspleject.common.schedule;
 
 import lombok.RequiredArgsConstructor;
-import org.personal.comerspleject.domain.coupon.policy.CouponPolicyRunner;
+import org.personal.comerspleject.domain.policyAndscheduler.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
 import org.springframework.scheduling.annotation.Scheduled;

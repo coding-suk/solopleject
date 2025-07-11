@@ -1,11 +1,10 @@
-package org.personal.comerspleject.domain.coupon.policy;
+package org.personal.comerspleject.domain.policyAndscheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.LongStream;
 
 @Component
 @RequiredArgsConstructor

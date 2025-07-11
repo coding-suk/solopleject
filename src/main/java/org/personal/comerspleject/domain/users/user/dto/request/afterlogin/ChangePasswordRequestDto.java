@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ChangePasswordRequestDto {
 
+    // 비밀번호 변경
     private String currentPassword;
 
     private String newPassword;

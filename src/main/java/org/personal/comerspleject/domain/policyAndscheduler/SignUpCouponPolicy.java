@@ -1,9 +1,8 @@
-package org.personal.comerspleject.domain.coupon.policy;
+package org.personal.comerspleject.domain.policyAndscheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
-import org.personal.comerspleject.domain.coupon.dto.CouponResponseDto;
 import org.personal.comerspleject.domain.coupon.entity.Coupon;
 import org.personal.comerspleject.domain.coupon.entity.UserCoupon;
 import org.personal.comerspleject.domain.coupon.repository.CouponRepository;

@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.coupon.policy;
+package org.personal.comerspleject.domain.policyAndscheduler;
 
 import org.personal.comerspleject.domain.users.user.entity.User;
 
