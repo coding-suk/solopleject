@@ -34,7 +34,7 @@ public class Product {
 
     private String imageURL;
 
-    private Boolean isDeleted = false;
+    private boolean isDeleted = false;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

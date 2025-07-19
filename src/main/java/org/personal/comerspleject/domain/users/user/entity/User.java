@@ -37,7 +37,7 @@ public class User implements Serializable {
     private int point = 0;
 
     // 회원탈퇴 유무
-    private Boolean isdeleted = false;
+    private boolean isdeleted = false;
 
     // 회원가입 당시
     @Column(updatable = false)
