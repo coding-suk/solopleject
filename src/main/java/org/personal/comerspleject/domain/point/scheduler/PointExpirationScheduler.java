@@ -30,7 +30,7 @@ public class PointExpirationScheduler {
         System.out.println("/[Test] 포인트 소멸 스케줄러 실행 중");
 
         List<PointHistory> expiredHistories = pointHistoryRepository
-                .findByTypeAndExpiredAtBefore(PointType.EARNED, LocalDateTime.now());
+                .findUnexpiredExpiredPoints(PointType.EARNED, LocalDateTime.now());
 
         for (PointHistory history : expiredHistories) {
             if(history.isExpired()) continue; // 이미 처리된 내용이면 넘김
