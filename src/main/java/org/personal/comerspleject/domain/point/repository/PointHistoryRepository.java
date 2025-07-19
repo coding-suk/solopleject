@@ -24,11 +24,24 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 
     @Query("SELECT COALESCE(SUM(ph.amount), 0) FROM PointHistory ph WHERE ph.user = :user AND ph.type = :type")
     int sumByUserAndType(@Param("user") User user, @Param("type") PointType type);
-    
-    List<PointHistory> findByTypeAndExpiredAtBefore(PointType type, LocalDateTime now);
+
+    @Query("""
+    SELECT ph FROM PointHistory ph
+    WHERE ph.type = :type
+      AND ph.expiredAt < :now
+      AND ph.expired = false
+""")
+    List<PointHistory> findUnexpiredExpiredPoints(@Param("type") PointType type,
+                                                  @Param("now") LocalDateTime now);
 
     // 쿠폰 만료
-    @Query("SELECT ph FROM PointHistory pg WHERE ph.user = :user = AND ph.type  = :type AND ph.expired = false AND ph.expiredAt BETWEEN :from AND :to")
+    @Query("""
+    SELECT ph FROM PointHistory ph 
+    WHERE ph.user = :user 
+      AND ph.type = :type 
+      AND ph.expired = false 
+      AND ph.expiredAt BETWEEN :from AND :to
+      """)
     List<PointHistory> findByExpiringSoon(@Param("user") User user,
                                           @Param("type") PointType type,
                                           @Param("from") LocalDateTime from,
