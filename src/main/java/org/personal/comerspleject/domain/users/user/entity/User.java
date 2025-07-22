@@ -37,7 +37,7 @@ public class User implements Serializable {
     private int point = 0;
 
     // 회원탈퇴 유무
-    private boolean isdeleted = false;
+    private boolean isDeleted = false;
 
     // 회원가입 당시
     @Column(updatable = false)
@@ -76,7 +76,7 @@ public class User implements Serializable {
     }
 
     public void deletedUser(String email, String password) {
-        this.isdeleted = true;
+        this.isDeleted = true;
     }
 
     public void updateUserRole(UserRole newUserRole) {

@@ -23,34 +23,34 @@ public class AdminService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    // 유저 조회(전체)
+    // 🔁 삭제되지 않은 유저 전체 조회
     public List<AdminResponseDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findByIsDeletedFalse();
         return users.stream()
                 .map(AdminResponseDto::from)
                 .collect(Collectors.toList());
     }
 
-    // 유저 검색(이름 or 이메일)
+    // 🔁 삭제되지 않은 유저만 이름 또는 이메일로 검색
     public List<AdminResponseDto> searchUser(String keyword) {
-        List<User> users = userRepository.findByNameContainingOrEmailContaining(keyword, keyword);
-        return users.stream().map(AdminResponseDto::from).collect(Collectors.toList());
+        List<User> users = userRepository.findByIsDeletedFalseAndNameContainingOrEmailContaining(keyword, keyword);
+        return users.stream()
+                .map(AdminResponseDto::from)
+                .collect(Collectors.toList());
     }
 
-    // 유저 제거
+    // 유저 DB에서 완전 삭제
     public void deleteUser(Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
-
-        userRepository.delete(user); // DB에서 삭제
+        userRepository.delete(user);
     }
 
     // 유저 정보 수정
     @Transactional
     public void updateUserInfo(Long userId, AdminUpdateRequestDto adminUpdateRequestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
         user.updateUserinfo(user.getPassword(), user.getAddress());
         user.setName(adminUpdateRequestDto.getName());
     }
@@ -58,7 +58,7 @@ public class AdminService {
     // 유저 상세 조회
     public AdminResponseDto getUserDetail(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new EcomosException(ErrorCode._DELETED_USER));
+                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
         return AdminResponseDto.from(user);
     }
 
@@ -66,22 +66,21 @@ public class AdminService {
     @Transactional
     public void changeUserRole(Long userId, String role) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
         UserRole newRole = UserRole.of(role);
         user.updateUserRole(newRole);
     }
 
     // 특정 판매자 상품조회
     public List<ProductResponseDto> getProductBySellerId(Long sellerId) {
-        // 판매자 존재 여부
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
-        if(!seller.getRole().equals(UserRole.SELLER)) {
+        if (!seller.getRole().equals(UserRole.SELLER)) {
             throw new EcomosException(ErrorCode._INVALID_USER_ROLE);
         }
-        return productRepository.findBySellerUid(sellerId).stream()
-                .filter(p-> !p.isDeleted())// 삭제된  상품 제외
+
+        return productRepository.findBySellerUidAndIsDeletedFalse(sellerId).stream()
                 .map(ProductResponseDto::from)
                 .collect(Collectors.toList());
     }

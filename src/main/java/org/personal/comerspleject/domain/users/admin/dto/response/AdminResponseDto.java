@@ -17,7 +17,7 @@ public class AdminResponseDto {
 
     private UserRole role;
 
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     private String address;
 
@@ -27,7 +27,7 @@ public class AdminResponseDto {
                 user.getEmail(),
                 user.getName(),
                 user.getRole(),
-                user.getIsdeleted(),
+                user.isDeleted(),
                 user.getAddress()
         );
     }

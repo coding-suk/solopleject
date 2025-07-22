@@ -94,7 +94,7 @@ public class AuthService {
         }
 
         // 탈퇴한 유저일 경우 로그인 불가
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
 

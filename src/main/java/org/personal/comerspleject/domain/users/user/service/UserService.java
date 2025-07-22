@@ -39,7 +39,7 @@ public class UserService {
             throw new EcomosException(ErrorCode._PASSWORD_NOT_MATCHES);
         }
 
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
 
@@ -60,7 +60,7 @@ public class UserService {
         }
         User user = userRepository.findById(id).orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
         user.updateUserRole(UserRole.ADMIN);
@@ -73,7 +73,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
 
@@ -88,7 +88,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
 
@@ -105,7 +105,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
         String token = tokenService.generatePasswordResetToken(email);// 토큰 생성
@@ -131,7 +131,7 @@ public class UserService {
                 .orElseThrow(()->new EcomosException(ErrorCode._NOT_FOUND_USER));
 
         // 탈퇴한 사용자는 제외
-        if(user.getIsdeleted()) {
+        if(user.isDeleted()) {
             throw new EcomosException(ErrorCode._DELETED_USER);
         }
 
