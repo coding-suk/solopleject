@@ -64,7 +64,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getProductBySellerId(Long sellerId) {
-        List<Product> products = productRepository.findBySellerUidAndIsDeletedFalse(sellerId);
+        List<Product> products = productRepository.findBySellerUid(sellerId);
         return products.stream()
                 .map(p-> new ProductResponseDto(p.getPId(), p.getName(), p.getPrice(), p.getCategory(), p.getImageURL()))
                 .collect(Collectors.toList());

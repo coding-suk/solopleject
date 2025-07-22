@@ -21,7 +21,7 @@ public class UserCouponService {
     private final UserCouponRepository userCouponRepository;
 
     public List<UserCoupon> getAvailableCoupons(User user) {
-        return userCouponRepository.findByUserAndExpiredAtFalseAndUsedFalse(user);
+        return userCouponRepository.findByUserAndExpiredFalseAndUsedFalse(user);
     }
 
     public void useCoupon(Long userCouponId) {

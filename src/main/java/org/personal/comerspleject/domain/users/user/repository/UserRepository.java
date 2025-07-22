@@ -15,7 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(@NotBlank @Email String email);
 
-    List<User> findByNameContainingOrEmailContaining(String keyword, String keyword1);
+    // 삭제되지 않은 사용자만 검섹
+    List<User> findByIsDeletedFalse();
 
-//    Collection<User> findAll();
+    // 이름 또는 이메일로 검색하면서 삭제되지 않은 유저만 검색
+    List<User> findByIsDeletedFalseAndNameContainingOrEmailContaining(String name, String email);
 }

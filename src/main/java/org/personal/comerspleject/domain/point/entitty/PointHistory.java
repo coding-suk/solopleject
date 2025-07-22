@@ -10,6 +10,16 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
+/*
+DB에서 명시를 해줬지만, 혼돈을 막기 위해 표기
+@Table(
+        name = "point_history",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_user_created_type", // 명시적으로 이름 부여
+                columnNames = {"user_uid", "created_at", "type"}
+        )
+)
+ */
 public class PointHistory {
 
     // 적립, 사용 이력
@@ -49,6 +59,11 @@ public class PointHistory {
     // 테스트 용
     public void setExpiredAt(LocalDateTime expiredAt) {
         this.expiredAt = expiredAt;
+    }
+
+    // 테스트 용
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
 }

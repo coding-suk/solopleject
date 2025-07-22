@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface CouponRepository  extends JpaRepository<Coupon, Long> {
 
     // 쿠폰 타입으로 조회
-    List<Coupon> findByCouponType(CouponType type);
+    List<Coupon> findByType(CouponType type);
 
     // 만료되지 않은 쿠폰만
     List<Coupon> findByExpiredAtAfter(LocalDateTime now);

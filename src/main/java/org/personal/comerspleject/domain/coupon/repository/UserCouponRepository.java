@@ -16,7 +16,7 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     List<UserCoupon> findCouponsToExpire(@Param("now") LocalDateTime now);
 
     // 사용자 보유 쿠폰 조회(사용X, 만료X)
-    List<UserCoupon> findByUserAndExpiredAtFalseAndUsedFalse(User user);
+    List<UserCoupon> findByUserAndExpiredFalseAndUsedFalse(User user);
 
     boolean existsByUserAndCoupon_Name(User user, String couponName);
 
