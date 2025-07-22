@@ -11,9 +11,11 @@ import org.personal.comerspleject.domain.users.seller.entity.Product;
 import org.personal.comerspleject.domain.users.seller.repository.ProductRepository;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,12 @@ public class CartServiceImpl implements CartService{
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    // redis 키 구성 메서드
+    private String getRedisKey(Long userId) {
+        return "cart:" + userId;
+    }
 
     // 장바구니 상품 추가
     @Override
@@ -51,19 +59,40 @@ public class CartServiceImpl implements CartService{
 
         cartRepository.save(cart);
 
+        // redis 캐쉬 삭제
+        redisTemplate.delete(getRedisKey(userId));
+
         return CartResponseDto.from(cart);
     }
 
     // 전체 조회
     @Override
     public CartResponseDto getCart(Long userId) {
+
+        String redisKey = getRedisKey(userId);
+
+        // redis에서 먼저 조회
+        CartResponseDto cached = (CartResponseDto) redisTemplate.opsForValue().get(redisKey);
+        if(cached != null) {
+            return cached;
+        }
+
+        // redis에 없으면 DB에 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(()-> new Cart(user));// 장바구니가 없는 경우 빈 장바구니 반환
 
-        return CartResponseDto.from(cart);
+        CartResponseDto response = CartResponseDto.from(cart);
+
+        // 성능 최적화 : 비어있는 장바구니는 캐시하지 않음
+        if(response.getItems() != null && !response.getItems().isEmpty()) {
+            // redis 캐시 저장
+            redisTemplate.opsForValue().set(redisKey, response, Duration.ofMinutes(30));
+        }
+
+        return response;
     }
 
     // 장바구니에 담긴 상품 수량 수정
@@ -83,6 +112,9 @@ public class CartServiceImpl implements CartService{
         item.updateQuantity(quantity);
         cartRepository.save(cart);
 
+        // redis 캐시 삭제
+        redisTemplate.delete(getRedisKey(userId));
+
         return CartResponseDto.from(cart);
     }
 
@@ -101,6 +133,9 @@ public class CartServiceImpl implements CartService{
 
         cart.getItems().remove(itemToRemove);
         cartRepository.save(cart);
+
+        // redis 캐시 삭제
+        redisTemplate.delete(getRedisKey(userId));
 
         return CartResponseDto.from(cart);
     }

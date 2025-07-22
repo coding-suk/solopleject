@@ -1,11 +1,13 @@
 package org.personal.comerspleject.domain.cart.dto.response;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.personal.comerspleject.domain.cart.entity.Cart;
 
 import java.util.List;
 
 @Getter
+@Setter
 public class CartResponseDto {
 
     // 본인 장바구니를 전체 조회할떄
@@ -21,6 +23,8 @@ public class CartResponseDto {
         this.items = items;
         this.totalPrice = totalPrice;
     }
+
+    public CartResponseDto() {}
 
     public static CartResponseDto from(Cart cart) {
         List<CartItemResponseDto> itemDtos = cart.getItems().stream()

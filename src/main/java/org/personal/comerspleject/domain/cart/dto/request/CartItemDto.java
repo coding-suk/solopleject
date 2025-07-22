@@ -5,20 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddCartItemRequestDto {
+public class CartItemDto {
 
-    // 물품 추가할때 사용
     private Long productId;
+
     private int quantity;
 
-    public CartItemDto toCartItem() {
-        return new CartItemDto(this.productId, this.quantity);
-    }
-
 }
-
