@@ -17,4 +17,6 @@ public interface CouponRepository  extends JpaRepository<Coupon, Long> {
     List<Coupon> findByExpiredAtAfter(LocalDateTime now);
 
     Optional<Coupon> findByName(String couponName);
+
+    List<Coupon> findAllByName(String couponName);
 }

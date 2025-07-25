@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.policyAndscheduler;
+package org.personal.comerspleject.domain.coupon.policyAndscheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.domain.coupon.service.UserCouponService;
