@@ -18,7 +18,9 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cId;
 
+    @Column(name = "name", unique = true, nullable = false)
     private String name; // 신규 가입 시 10% 할일
+
     private int discountAmount; // 정액(고정금액), 정률(퍼센트 할일) 금액(선택)
     private int minOrderAmount; // 최소 주문 금액
     private boolean isPercent; // 퍼샌트 여부
