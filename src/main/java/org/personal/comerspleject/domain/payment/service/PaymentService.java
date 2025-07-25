@@ -17,7 +17,7 @@ import org.personal.comerspleject.domain.payment.dto.PaymentSnapshot;
 import org.personal.comerspleject.domain.payment.entity.Payment;
 import org.personal.comerspleject.domain.payment.repository.PaymentRepository;
 import org.personal.comerspleject.domain.point.service.PointService;
-import org.personal.comerspleject.domain.policyAndscheduler.CouponPolicyRunner;
+import org.personal.comerspleject.domain.coupon.policyAndscheduler.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
