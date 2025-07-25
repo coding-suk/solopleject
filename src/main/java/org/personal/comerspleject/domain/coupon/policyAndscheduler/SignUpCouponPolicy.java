@@ -1,4 +1,4 @@
-package org.personal.comerspleject.domain.policyAndscheduler;
+package org.personal.comerspleject.domain.coupon.policyAndscheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
@@ -11,6 +11,7 @@ import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -30,10 +31,23 @@ public class SignUpCouponPolicy  implements CouponPolicy{
 
     @Override
     public void issue(User user) {
-        Coupon coupon = couponRepository.findByName(COUPON_NAME)
-                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_COUPON));
+        List<Coupon> signupCoupons = couponRepository.findAllByName(COUPON_NAME);
 
-        userCouponRepository.save(new UserCoupon(user, coupon, LocalDateTime.now(), coupon.getExpiredAt()));
+        if (signupCoupons.isEmpty()) {
+            throw new EcomosException(ErrorCode._NOT_FOUND_COUPON);
+        }
+
+        // 최신 쿠폰만 남기고 나머지 중복 쿠폰 삭제
+        signupCoupons.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())); // 최신순 정렬
+        Coupon latestCoupon = signupCoupons.get(0); // 가장 최신 쿠폰
+
+        if (signupCoupons.size() > 1) {
+            List<Coupon> duplicates = signupCoupons.subList(1, signupCoupons.size());
+            couponRepository.deleteAll(duplicates);
+        }
+
+        // 사용자에게 쿠폰 발급
+        userCouponRepository.save(new UserCoupon(user, latestCoupon, LocalDateTime.now(), latestCoupon.getExpiredAt()));
     }
 
 }
