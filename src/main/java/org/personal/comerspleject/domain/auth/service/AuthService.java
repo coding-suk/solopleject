@@ -6,7 +6,7 @@ import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.JwtUtil;
 import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
 import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
-import org.personal.comerspleject.domain.policyAndscheduler.CouponPolicyRunner;
+import org.personal.comerspleject.domain.coupon.policyAndscheduler.CouponPolicyRunner;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
@@ -32,8 +32,7 @@ public class AuthService {
 
     // 비밀번호 유효성 검사 정규 표현식
     private static final String PASSWORD_PATTERN =
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-
+            "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?`~]{8,}$";
     // 회원가입
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
