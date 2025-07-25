@@ -25,12 +25,15 @@ public class AuthUser {
 
     private final String address;
 
+    private final UserRole userRole;
+
     public AuthUser(Long id, String name, String email, UserRole role, String address) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.authorities = List.of(new SimpleGrantedAuthority(role.name()));
         this.address = address;
+        this.userRole = role;
     }
 
 }
