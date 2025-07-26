@@ -4,13 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
 import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
+import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +29,12 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@Valid @RequestBody SigninRequestDto signinRequestDto) {
         return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, authService.signin(signinRequestDto)).body("SUCCESS");
+    }
+
+    // 로그인 유지
+    @GetMapping("/me")
+    public ResponseEntity<AuthUser> getCurrentUser(@AuthenticationPrincipal AuthUser authUser) {
+        return ResponseEntity.ok(authUser);
     }
 
 }

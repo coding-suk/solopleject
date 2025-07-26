@@ -6,7 +6,13 @@ import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.JwtUtil;
 import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
 import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
+import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.coupon.policyAndscheduler.CouponPolicyRunner;
+import org.personal.comerspleject.domain.coupon.repository.UserCouponRepository;
+import org.personal.comerspleject.domain.order.dto.response.RecentOrderResponseDto;
+import org.personal.comerspleject.domain.order.entity.Order;
+import org.personal.comerspleject.domain.order.repository.OrderRepository;
+import org.personal.comerspleject.domain.users.user.dto.response.UserInfoResponseDto;
 import org.personal.comerspleject.domain.users.user.entity.User;
 import org.personal.comerspleject.domain.users.user.entity.UserRole;
 import org.personal.comerspleject.domain.users.user.repository.UserRepository;
@@ -14,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
@@ -25,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final CouponPolicyRunner couponPolicyRunner;
+    private final OrderRepository orderRepository;
 
     // 이메일 유효성 검사 정규 표현식
     private static final String EMAIL_PATTERN =
@@ -33,6 +41,8 @@ public class AuthService {
     // 비밀번호 유효성 검사 정규 표현식
     private static final String PASSWORD_PATTERN =
             "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?`~]{8,}$";
+    private final UserCouponRepository userCouponRepository;
+
     // 회원가입
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
@@ -98,5 +108,46 @@ public class AuthService {
         }
 
         return jwtUtil.createToken(user.getUid(), user.getEmail(), user.getName(), user.getRole());
+    }
+
+    // 로그인 유지
+    @Transactional(readOnly = true)
+    public UserInfoResponseDto getMyInfo(AuthUser authUSer) {
+        User user = userRepository.findByEmail(authUSer.getEmail())
+                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        // 보유 쿠폰 수
+        int couponCount = userCouponRepository.countActivateCoupons(user);
+
+        // 최근 주문
+        Order order = orderRepository.findTopByUserOrderByCreatedAtDesc(user)
+                .orElse(null);
+
+        RecentOrderResponseDto recentOrderDto = null;
+        if (order != null) {
+            List<String> productNames = order.getOrderItems().stream()
+                    .map(oi -> oi.getProduct().getName())
+                    .toList();
+
+            recentOrderDto = new RecentOrderResponseDto(
+                    order.getOId(),
+                    order.getCreatedAt(),
+                    order.getTotalPrice(),
+                    productNames
+            );
+        }
+
+        return new UserInfoResponseDto(
+                user.getUid(),
+                user.getName(),
+                user.getEmail(),
+                user.getAddress(),
+                user.getRole(),
+                user.getPoint(),
+                user.getCreatedAt(),
+                couponCount,
+                (order != null ? order.getCreatedAt() : null),
+                recentOrderDto
+        );
     }
 }
