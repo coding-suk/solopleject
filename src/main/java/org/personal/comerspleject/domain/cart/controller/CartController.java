@@ -3,12 +3,16 @@ package org.personal.comerspleject.domain.cart.controller;
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.cart.dto.request.AddCartItemRequestDto;
+import org.personal.comerspleject.domain.cart.dto.request.CartItemMergeRequestDto;
 import org.personal.comerspleject.domain.cart.dto.request.UpdateCartItemRequestDto;
 import org.personal.comerspleject.domain.cart.dto.response.CartResponseDto;
 import org.personal.comerspleject.domain.cart.service.CartServiceImpl;
+import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,5 +51,21 @@ public class CartController {
                                                           @PathVariable Long productId) {
         CartResponseDto response = cartService.deleteItemFromCart(authUser.getId(), productId);
         return ResponseEntity.ok(response);
+    }
+
+    // 병합 로직
+    @PostMapping("/items/marge")
+    public ResponseEntity<Void> mergeCart(@AuthenticationPrincipal User user,
+                                          @RequestBody List<CartItemMergeRequestDto> cartItemMergeRequestDtoList) {
+        cartService.mergeCart(user.getUid(), cartItemMergeRequestDtoList);
+        return ResponseEntity.ok().build();
+    }
+
+    // 비회원이 카트에 저장하는 로직
+    @PostMapping("/items/guest/save")
+    public ResponseEntity<Void> saveGuestCart(@RequestParam String guestId,
+                                              @RequestBody List<CartItemMergeRequestDto> cartItemMergeRequestDto) {
+        cartService.saveCartInRedis(guestId, cartItemMergeRequestDto);
+        return ResponseEntity.ok().build();
     }
 }

@@ -3,6 +3,7 @@ package org.personal.comerspleject.domain.cart.service;
 import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
+import org.personal.comerspleject.domain.cart.dto.request.CartItemMergeRequestDto;
 import org.personal.comerspleject.domain.cart.dto.response.CartResponseDto;
 import org.personal.comerspleject.domain.cart.entity.Cart;
 import org.personal.comerspleject.domain.cart.entity.CartItem;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -140,6 +144,42 @@ public class CartServiceImpl implements CartService{
         return CartResponseDto.from(cart);
     }
 
+    // 저장 메서드, 비회원 장바구니를 redis 서버에 저장
+    @Override
+    public void saveCartInRedis(String guestId, List<CartItemMergeRequestDto> items) {
 
+        String key = "guest_cart:" + guestId;
+
+        redisTemplate.opsForValue().set(key, items, Duration.ofMinutes(30));
+    }
+
+    // 병합 로직
+    @Override
+    public void mergeCart(Long userId, List<CartItemMergeRequestDto> guestItems) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseGet(() -> new Cart(user));
+
+        for (CartItemMergeRequestDto dto : guestItems) {
+            Product product = productRepository.findById(dto.getProductId())
+                    .orElseThrow(() -> new EcomosException(ErrorCode._NOT_FOUND_PRODUCT));
+
+            Optional<CartItem> existing = cart.getItems().stream()
+                    .filter(item -> item.getProduct().getPId().equals(product.getPId()))
+                    .findFirst();
+
+            if (existing.isPresent()) {
+                existing.get().updateQuantity(existing.get().getQuantity() + dto.getQuantity());
+            } else {
+                cart.addItem(new CartItem(product, dto.getQuantity()));
+            }
+        }
+
+        cartRepository.save(cart);
+        redisTemplate.delete(getRedisKey(userId));
+    }
 
 }
