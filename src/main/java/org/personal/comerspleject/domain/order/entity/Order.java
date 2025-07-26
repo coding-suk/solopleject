@@ -8,6 +8,7 @@ import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.domain.users.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,12 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    private List<OrderItem> orderItem = new ArrayList<>();
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public Order(User user, OrderStatus status) {
         this.user = user;

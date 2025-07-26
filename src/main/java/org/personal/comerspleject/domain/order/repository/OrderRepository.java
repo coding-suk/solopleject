@@ -5,9 +5,12 @@ import org.personal.comerspleject.domain.users.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByUser(User user);
 
     long countByUser(User user);
+
+    Optional<Order> findTopByUserOrderByCreatedAtDesc(User user);
 }
