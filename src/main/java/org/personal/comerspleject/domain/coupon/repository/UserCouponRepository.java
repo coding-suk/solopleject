@@ -23,4 +23,7 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     // 알림 대상 조회
     @Query("SELECT uc FROM UserCoupon uc WHERE uc.expiredAt BETWEEN :start AND :end AND uc.expired = false AND uc.used = false")
     List<UserCoupon> findCouponsExpiringTomorrow(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(uc) FROM UserCoupon uc WHERE uc.user = :user AND uc.used = false AND uc.expired = false")
+    int countActivateCoupons(@Param("user") User user);
 }
