@@ -6,6 +6,7 @@ import org.personal.comerspleject.domain.auth.dto.request.SigninRequestDto;
 import org.personal.comerspleject.domain.auth.dto.request.SignupRequestDto;
 import org.personal.comerspleject.domain.auth.entity.AuthUser;
 import org.personal.comerspleject.domain.auth.service.AuthService;
+import org.personal.comerspleject.domain.users.user.dto.response.UserInfoResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,8 +34,9 @@ public class AuthController {
 
     // 로그인 유지
     @GetMapping("/me")
-    public ResponseEntity<AuthUser> getCurrentUser(@AuthenticationPrincipal AuthUser authUser) {
-        return ResponseEntity.ok(authUser);
+    public ResponseEntity<UserInfoResponseDto> getCurrentUser(@AuthenticationPrincipal AuthUser authUser) {
+        UserInfoResponseDto dto = authService.getMyInfo(authUser);
+        return ResponseEntity.ok(dto);
     }
 
 }
