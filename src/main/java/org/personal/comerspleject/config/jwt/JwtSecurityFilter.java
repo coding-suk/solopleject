@@ -39,6 +39,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
         String authorizationHeader = httpRequest.getHeader("Authorization");
+        log.debug( "요청 Authorization 헤더 = {}", authorizationHeader);
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = jwtUtil.substringToken(authorizationHeader);
             try {
@@ -60,17 +61,44 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 
+                    // securityContext에 등록 직전
+                    log.info("SecurityContext 등록: email = {}, ROLE = {}", email, userRole);
+
                     // 시큐리티 컨텍스트에 등록
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                    // 로그 2: 등록 완료 후 인증 객체 출력
+                    log.info("✅ 인증 객체 설정 완료: {}", SecurityContextHolder.getContext().getAuthentication());
+
+                    // 로그 3: 현재 권한 목록 출력
+                    log.info("✅ 현재 Authentication 권한 = {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
                 }
             } catch(SecurityException | MalformedJwtException e) {
+                log.warn("🔐 JWT 형식 오류 또는 서명 오류: {}", e.getMessage());
                 throw new EcomosException(ErrorCode._UNAUTHORIZED_INVALID_TOKEN);
             } catch(ExpiredJwtException e) {
+                log.warn("🔐 JWT 만료됨: {}", e.getMessage());
                 throw new EcomosException(ErrorCode._UNAUTHORIZED_EXPIRED_TOKEN);
             } catch (UnsupportedJwtException e) {
+                log.warn("🔐 지원되지 않는 JWT: {}", e.getMessage());
                 throw new EcomosException(ErrorCode._BAD_REQUEST_UNSUPPORTED_TOKEN);
+            } catch (Exception e) {
+                log.warn("🔐 JWT 파싱 실패: {}", e.getMessage());
+                throw new EcomosException(ErrorCode._INVALID_TOKEN); // 예외 하나 더 추가 (fallback)
             }
         }
         chain.doFilter(httpRequest, httpResponse);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String uri = request.getRequestURI();
+        return uri.equals("/ecomos/auth/signin") ||
+                uri.equals("/ecomos/auth/signup") ||
+                uri.equals("/health") ||
+                uri.startsWith("/ecomos/sellers/products") ||
+                uri.startsWith("/ecomos/orders") ||
+                uri.startsWith("/products");
+    }
+
 }
