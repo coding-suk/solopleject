@@ -15,9 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -31,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable) // 세션 관련 내용 CSRF
 //                .csrf(csrf -> csrf
 //                        .ignoringRequestMatchers("/h2-console/**") // H2 콘솔은 CSRF 예외
@@ -46,9 +49,21 @@ public class SecurityConfig {
 //                .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // BasicAuthenticationFilter 비활성화
                 .logout(AbstractHttpConfigurer::disable) // LogoutFilter 비활성화
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/ecomos/auth/**", "/health").permitAll()// 회원가입, 로그인 허용 //health체크용
+//                        .anyRequest().authenticated()) // 그 외 모든 요청은 로그인 필요
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ecomos/auth/**", "/health").permitAll()// 회원가입, 로그인 허용 //health체크용
-                        .anyRequest().authenticated()) // 그 외 모든 요청은 로그인 필요
+                        .requestMatchers(
+                                "/",
+                                "/ecomos/auth/**",
+                                "/health",
+                                "/ecomos/sellers/products",
+                                "/ecomos/orders/**"// ✅ 여기도 임시 허용!
+                        ).permitAll()
+                        .requestMatchers("/products/**").hasRole("USER")
+
+                        .anyRequest().authenticated()
+                )
 //                .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
