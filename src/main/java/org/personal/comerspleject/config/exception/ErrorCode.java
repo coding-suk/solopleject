@@ -21,6 +21,7 @@ public enum ErrorCode {
     _BAD_REQUEST_INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않는 이메일입니다"),
     _DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다"),
     _INVALID_PASSWORD_FORM(HttpStatus.BAD_REQUEST, "유효하지 않는 비밀번호 형식입니다"),
+    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버에서 오류가 발생했습니다"),
 
     _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
 
