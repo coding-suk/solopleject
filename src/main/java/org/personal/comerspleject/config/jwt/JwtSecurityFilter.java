@@ -40,7 +40,13 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String authorizationHeader = httpRequest.getHeader("Authorization");
         log.debug( "요청 Authorization 헤더 = {}", authorizationHeader);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+
+        // 헤더가 없으면 바로 필터 통과
+        if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            chain.doFilter(httpRequest, httpResponse);
+            return;
+        }
+            // 허더가 있을때만 토큰 검증 진행
             String jwt = jwtUtil.substringToken(authorizationHeader);
             try {
                 Claims claims = jwtUtil.extractClaims(jwt);
@@ -86,19 +92,18 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 log.warn("🔐 JWT 파싱 실패: {}", e.getMessage());
                 throw new EcomosException(ErrorCode._INVALID_TOKEN); // 예외 하나 더 추가 (fallback)
             }
-        }
+
         chain.doFilter(httpRequest, httpResponse);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String uri = request.getRequestURI();
-        return uri.equals("/ecomos/auth/signin") ||
-                uri.equals("/ecomos/auth/signup") ||
+        return uri.equals("/") ||
                 uri.equals("/health") ||
+                (uri.startsWith("/ecomos/auth/") && !uri.equals("/ecomos/auth/me")) ||
                 uri.startsWith("/ecomos/sellers/products") ||
                 uri.startsWith("/ecomos/orders") ||
                 uri.startsWith("/products");
     }
-
 }
