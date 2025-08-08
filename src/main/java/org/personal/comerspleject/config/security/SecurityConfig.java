@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.personal.comerspleject.config.jwt.JwtSecurityFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -24,6 +26,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JwtSecurityFilter jwtSecurityFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,7 +36,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable) // 세션 관련 내용 CSRF
 //                .csrf(csrf -> csrf
 //                        .ignoringRequestMatchers("/h2-console/**") // H2 콘솔은 CSRF 예외
@@ -53,6 +56,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/ecomos/auth/**", "/health").permitAll()// 회원가입, 로그인 허용 //health체크용
 //                        .anyRequest().authenticated()) // 그 외 모든 요청은 로그인 필요
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                         .requestMatchers(
                                 "/",
                                 "/ecomos/auth/**",
@@ -62,7 +66,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/products/**").hasRole("USER")
 
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
 //                .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
