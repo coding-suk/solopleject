@@ -1,6 +1,7 @@
 package org.personal.comerspleject.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.personal.comerspleject.config.exception.EcomosException;
 import org.personal.comerspleject.config.exception.ErrorCode;
 import org.personal.comerspleject.config.jwt.JwtUtil;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -46,25 +48,36 @@ public class AuthService {
     // 회원가입
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
+        try{
+            log.info("➡️ 회원가입 요청 수신: {}", signupRequestDto);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new EcomosException(ErrorCode._INTERNAL_SERVER_ERROR);
+        }
+
 
         // 이메일 형식 유효성 검사
         if(!isValidEmail(signupRequestDto.getEmail())) {
+            log.warn("⛔ 잘못된 이메일 형식: {}", signupRequestDto.getEmail());
             throw new EcomosException(ErrorCode._BAD_REQUEST_INVALID_EMAIL);
         }
 
         // 이메일 중복확인
         if(userRepository.existsByEmail(signupRequestDto.getEmail())) {
+            log.warn("⛔ 중복된 이메일: {}", signupRequestDto.getEmail());
             throw new EcomosException(ErrorCode._DUPLICATED_EMAIL);
         }
 
         // 비밀번호 형식 유효성 검사
         if(!isValidPassword(signupRequestDto.getPassword())) {
+            log.warn("⛔ 비밀번호 형식 불일치");
             throw new EcomosException(ErrorCode._INVALID_PASSWORD_FORM);
         }
 
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
-
         UserRole role = UserRole.of(signupRequestDto.getRole());
+
+        log.info("회원 객체 생성 중...");
 
         User newUser = new User(
                 signupRequestDto.getEmail(),
@@ -76,9 +89,16 @@ public class AuthService {
         );
         // 유저 생성 후 저장
         userRepository.save(newUser);
+        log.info("✅ 유저 저장 완료: {}", newUser.getEmail());
 
         // 쿠폰 자동 발급
-        couponPolicyRunner.run(newUser);
+        try {
+            couponPolicyRunner.run(newUser);
+            log.info("🎁 쿠폰 자동 발급 완료");
+        } catch (Exception e) {
+            log.error("❌ 쿠폰 발급 중 예외 발생", e);
+            throw new EcomosException(ErrorCode._INTERNAL_SERVER_ERROR); // or define a specific coupon-related error
+        }
     }
 
     // 이메일 유효성 검사 메서드
