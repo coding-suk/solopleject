@@ -53,15 +53,15 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    // 병합 로직
-    @PostMapping("/items/marge")
+    // 병합 로직 - 로그인 후 병합 서버가 redis에서 guestId로 불러와 병합
+    @PostMapping("/items/merge")
     public ResponseEntity<Void> mergeCart(@AuthenticationPrincipal User user,
                                           @RequestBody List<CartItemMergeRequestDto> cartItemMergeRequestDtoList) {
         cartService.mergeCart(user.getUid(), cartItemMergeRequestDtoList);
         return ResponseEntity.ok().build();
     }
 
-    // 비회원이 카트에 저장하는 로직
+    // 비회원이 카트에 저장하는 로직 - 프론트에서 guestId와 아이템 리스트 보냄
     @PostMapping("/items/guest/save")
     public ResponseEntity<Void> saveGuestCart(@RequestParam String guestId,
                                               @RequestBody List<CartItemMergeRequestDto> cartItemMergeRequestDto) {
