@@ -32,48 +32,65 @@ public class CartServiceImpl implements CartService{
     private final UserRepository userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    // redis 키 구성 메서드
-    private String getRedisKey(Long userId) {
+    // 사용자키 구성 메서드
+    private String userKey(Long userId) {
         return "cart:" + userId;
     }
 
-    // 장바구니 상품 추가
-    @Override
-    public CartResponseDto addItemToCart(Long userId, Long productId, int quantity) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_PRODUCT));
-
-        Cart cart = cartRepository.findByUser(user)
-                .orElseGet(()-> new Cart(user));
-
-        // 장바구니에 이미 있는 상품인지 확인
-        Optional<CartItem> optionalItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getPId().equals(productId))
-                .findFirst();
-
-        if(optionalItem.isPresent()) {
-            optionalItem.get().updateQuantity(optionalItem.get().getQuantity() + quantity);
-        } else {
-            CartItem newItem = new CartItem(product, quantity);
-            cart.addItem(newItem);
-        }
-
-        cartRepository.save(cart);
-
-        // redis 캐쉬 삭제
-        redisTemplate.delete(getRedisKey(userId));
-
-        return CartResponseDto.from(cart);
+    // 게스트키 구성
+    private String guestKey(String guestId) {
+        return "cart:guest:" + guestId;
     }
+
+        // 장바구니 상품 추가
+        @Override
+        public CartResponseDto addItemToCart(Long userId, Long productId, int quantity) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_USER));
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(()-> new EcomosException(ErrorCode._NOT_FOUND_PRODUCT));
+
+            Cart cart = cartRepository.findByUser(user)
+                    .orElseGet(()-> new Cart(user));
+
+            cart.getItems().stream()
+                    .filter(item -> item.getProduct().getPId().equals(productId))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            it -> it.updateQuantity(it.getQuantity() + quantity),
+                            () -> cart.addItem(new CartItem(product, quantity))
+                    );
+
+            cartRepository.save(cart);
+            // 사용자 캐쉬 무효화
+            redisTemplate.delete(userKey(userId));
+
+//            // 장바구니에 이미 있는 상품인지 확인
+//            Optional<CartItem> optionalItem = cart.getItems().stream()
+//                    .filter(item -> item.getProduct().getPId().equals(productId))
+//                    .findFirst();
+//
+//            if(optionalItem.isPresent()) {
+//                optionalItem.get().updateQuantity(optionalItem.get().getQuantity() + quantity);
+//            } else {
+//                CartItem newItem = new CartItem(product, quantity);
+//                cart.addItem(newItem);
+//            }
+//
+//            cartRepository.save(cart);
+//
+//            // redis 캐쉬 삭제
+//            redisTemplate.delete(userKey(userId));
+
+            return CartResponseDto.from(cart);
+        }
 
     // 전체 조회
     @Override
     public CartResponseDto getCart(Long userId) {
 
-        String redisKey = getRedisKey(userId);
+        String redisKey = userKey(userId);
 
         // redis에서 먼저 조회
         CartResponseDto cached = (CartResponseDto) redisTemplate.opsForValue().get(redisKey);
@@ -116,8 +133,8 @@ public class CartServiceImpl implements CartService{
         item.updateQuantity(quantity);
         cartRepository.save(cart);
 
-        // redis 캐시 삭제
-        redisTemplate.delete(getRedisKey(userId));
+        // redis 캐시 삭제(사용자 캐쉬 무효화)
+        redisTemplate.delete(userKey(userId));
 
         return CartResponseDto.from(cart);
     }
@@ -139,7 +156,7 @@ public class CartServiceImpl implements CartService{
         cartRepository.save(cart);
 
         // redis 캐시 삭제
-        redisTemplate.delete(getRedisKey(userId));
+        redisTemplate.delete(userKey(userId));
 
         return CartResponseDto.from(cart);
     }
@@ -149,11 +166,33 @@ public class CartServiceImpl implements CartService{
     public void saveCartInRedis(String guestId, List<CartItemMergeRequestDto> items) {
 
         String key = "guest_cart:" + guestId;
-
-        redisTemplate.opsForValue().set(key, items, Duration.ofMinutes(30));
+        // 리스트 자체를 값으로 저장(Json 직렬화)
+        redisTemplate.opsForValue().set(key, items, Duration.ofHours(2)); // TTL 2시간
     }
 
-    // 병합 로직
+    // 로그인 시 redis에서 게스트 카트 불러와 병합 -> 게스트 키 삭제
+    public void mergeGuestCartToUser(String guestId, Long userId) {
+        String gKey = guestKey(guestId);
+
+        @SuppressWarnings("unchecked")
+        List<CartItemMergeRequestDto> guestItems =
+                (List<CartItemMergeRequestDto>) redisTemplate.opsForValue().get(gKey);
+
+        if(guestItems == null || guestItems.isEmpty()) {
+            // 게스트 장바구니가 없거나 만료됨
+            redisTemplate.delete(gKey); // 남아있으면 정리
+            return;
+        }
+
+        // DB병합
+        mergeCart(userId, guestItems);
+
+        // 게스트 키 삭제
+        redisTemplate.delete(gKey);
+    }
+
+    // 기존 병합 로직(클라이언트가 리스트를 직접 보낸 경우도 지원)
+
     @Override
     public void mergeCart(Long userId, List<CartItemMergeRequestDto> guestItems) {
 
@@ -179,7 +218,7 @@ public class CartServiceImpl implements CartService{
         }
 
         cartRepository.save(cart);
-        redisTemplate.delete(getRedisKey(userId));
+        redisTemplate.delete(userKey(userId));
     }
 
 }
